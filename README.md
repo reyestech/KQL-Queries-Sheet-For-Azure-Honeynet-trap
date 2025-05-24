@@ -241,3 +241,55 @@ AzureNetworkAnalytics_CL
 | where FlowType_s == "MaliciousFlow" and AllowedInFlows_d >= 1
 | project TimeGenerated, FlowType = FlowType_s, IpAddress = SrcIP_s, DestinationIpAddress = DestIP_s, DestinationPort = DestPort_d, Protocol = L7Protocol_s, NSGRuleMatched = NSGRules_s, InboundFlowCount = AllowedInFlows_d
 ```
+
+## Kusto Query Language (KQL) & Python SDK Automation Queries
+
+<details>
+<summary> 📋 Click to View KQL All Automation Queries <</summary>
+  
+### Start & Stop Time
+```
+range x from 1 to 1 step 1
+| project StartTime = ago(24h), StopTime = now()
+```
+### Security Events (Windows VMs)
+```
+SecurityEvent
+| where TimeGenerated >= ago(24h)
+| count
+```
+### Syslog (Ubuntu Linux VMs)  
+```
+Syslog
+| where TimeGenerated >= ago(24h)
+| count
+```
+### Security Alert (Microsoft Defender for Cloud)
+```
+SecurityAlert
+| where DisplayName !startswith "CUSTOM" and DisplayName !startswith "TEST"
+| where TimeGenerated >= ago(24h)
+| count
+```
+### Security Incidents (Sentinel Incidents)
+```
+SecurityIncident
+| where TimeGenerated >= ago(24h)
+| count
+```
+### Azure NSG Inbound Malicious Flows Allowed
+```
+AzureNetworkAnalytics_CL 
+| where FlowType_s == "MaliciousFlow" and AllowedInFlows_d > 0
+| where TimeGenerated >= ago(24h)
+| count
+```
+### Azure NSG Inbound Malicious Flows Allowed
+```
+AzureNetworkAnalytics_CL 
+| where FlowType_s == "MaliciousFlow" and DeniedInFlows_d > 0
+| where TimeGenerated >= ago(24h)
+| count
+```
+</details>
+
